@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F1 Podium Selector 2025</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px; }
+        h1, h2 { text-align: center; color: #dc0000; }
+        .selection-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        select { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #dc0000;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        button:hover { background-color: #a00000; }
+        #results { margin-top: 20px; padding: 10px; border: 1px dashed #eee; background-color: #f9f9f9; text-align: center; }
+        .driver-option { font-weight: bold; } /* For styling the driver name */
+        .team-name { font-style: italic; color: #555; font-size: 0.9em; } /* For styling the team name */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>2025 F1 Grand Prix Podium Selector</h1>
+        <p>Select your predicted 1st, 2nd, and 3rd place finishers for the upcoming race.</p>
+
+        <form id="podiumPredictorForm">
+            <div class="selection-group">
+                <label for="firstPlace">1st Place:</label>
+                <select id="firstPlace" name="firstPlace" required>
+                    <option value="">-- Select Driver --</option>
+                    </select>
+            </div>
+
+            <div class="selection-group">
+                <label for="secondPlace">2nd Place:</label>
+                <select id="secondPlace" name="secondPlace" required>
+                    <option value="">-- Select Driver --</option>
+                    </select>
+            </div>
+
+            <div class="selection-group">
+                <label for="thirdPlace">3rd Place:</label>
+                <select id="thirdPlace" name="thirdPlace" required>
+                    <option value="">-- Select Driver --</option>
+                    </select>
+            </div>
+
+            <button type="submit">Submit Prediction</button>
+        </form>
+
+        <div id="results">
+            <h2>Your Podium Prediction:</h2>
+            <p id="predictionOutput">No prediction submitted yet.</p>
+        </div>
+    </div>
+
+    <script>
+        const drivers2025 = [
+            { name: "Max Verstappen", team: "Red Bull Racing" },
+            { name: "Yuki Tsunoda", team: "Red Bull Racing" },
+            { name: "Charles Leclerc", team: "Ferrari" },
+            { name: "Lewis Hamilton", team: "Ferrari" },
+            { name: "George Russell", team: "Mercedes" },
+            { name: "Andrea Kimi Antonelli", team: "Mercedes" },
+            { name: "Lando Norris", team: "McLaren" },
+            { name: "Oscar Piastri", team: "McLaren" },
+            { name: "Fernando Alonso", team: "Aston Martin Aramco F1 Team" },
+            { name: "Lance Stroll", team: "Aston Martin Aramco F1 Team" },
+            { name: "Pierre Gasly", team: "Alpine F1 Team" },
+            { name: "Franco Colapinto", team: "Alpine F1 Team" },
+            { name: "Alexander Albon", team: "Williams Racing" },
+            { name: "Carlos Sainz", team: "Williams Racing" },
+            { name: "Liam Lawson", team: "RB (Racing Bulls)" },
+            { name: "Isack Hadjar", team: "RB (Racing Bulls)" },
+            { name: "Nico Hülkenberg", team: "Sauber" },
+            { name: "Gabriel Bortoleto", team: "Sauber" },
+            { name: "Esteban Ocon", team: "Haas F1 Team" },
+            { name: "Oliver Bearman", team: "Haas F1 Team" }
+        ];
+
+        const firstPlaceSelect = document.getElementById('firstPlace');
+        const secondPlaceSelect = document.getElementById('secondPlace');
+        const thirdPlaceSelect = document.getElementById('thirdPlace');
+        const form = document.getElementById('podiumPredictorForm');
+        const predictionOutput = document.getElementById('predictionOutput');
+
+        // Function to populate select dropdowns
+        function populateDropdowns(selectElement, excludeDrivers = []) {
+            selectElement.innerHTML = '<option value="">-- Select Driver --</option>'; // Reset
+            const currentSelectedValue = selectElement.value; // Store current value to reselect later
+
+            drivers2025.forEach(driver => {
+                // Only add driver if not in the exclude list
+                if (!excludeDrivers.includes(driver.name)) {
+                    const option = document.createElement('option');
+                    option.value = driver.name;
+                    option.textContent = `${driver.name} (${driver.team})`;
+                    option.classList.add('driver-option');
+                    selectElement.appendChild(option);
+                }
+            });
+            // Attempt to reselect the previously selected value if it's still available
+            if (currentSelectedValue && !excludeDrivers.includes(currentSelectedValue)) {
+                selectElement.value = currentSelectedValue;
+            } else {
+                selectElement.value = ""; // Reset if selected driver is now excluded
+            }
+        }
+
+        // Initial population of all dropdowns
+        populateDropdowns(firstPlaceSelect);
+        populateDropdowns(secondPlaceSelect);
+        populateDropdowns(thirdPlaceSelect);
+
+        // Event listener for changes in dropdowns to prevent duplicate selections
+        form.addEventListener('change', (event) => {
+            const first = firstPlaceSelect.value;
+            const second = secondPlaceSelect.value;
+            const third = thirdPlaceSelect.value;
+
+            // Re-populate dropdowns excluding selected drivers
+            populateDropdowns(firstPlaceSelect, [second, third].filter(Boolean));
+            populateDropdowns(secondPlaceSelect, [first, third].filter(Boolean));
+            populateDropdowns(thirdPlaceSelect, [first, second].filter(Boolean));
+        });
+
+        // Handle form submission
+        form.addEventListener('submit', (event) => {
+            event.preventDefault(); // Prevent default form submission
+
+            const first = firstPlaceSelect.value;
+            const second = secondPlaceSelect.value;
+            const third = thirdPlaceSelect.value;
+
+            // Basic validation for unique selections
+            if (first === second || first === third || second === third) {
+                alert("Please select three different drivers for the podium positions.");
+                return;
+            }
+
+            if (first && second && third) {
+                predictionOutput.innerHTML = `
+                    <p><strong>1st Place:</strong> ${first}</p>
+                    <p><strong>2nd Place:</strong> ${second}</p>
+                    <p><strong>3rd Place:</strong> ${third}</p>
+                `;
+            } else {
+                predictionOutput.textContent = "Please select drivers for all three podium positions.";
+            }
+        });
+    </script>
+</body>
+</html>
