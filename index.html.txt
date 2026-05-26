@@ -1366,7 +1366,7 @@ function renderPreds(preds){
     const div=document.createElement('div'); div.className='pred-item';
     const teamCol = driverTeamColor(p.picks[0]);
     div.style.borderLeftColor = teamCol;
-    div.innerHTML=`<div class="pi-hdr"><div class="pi-dot" style="background:${teamCol}"></div><div class="pi-nm">${esc(p.mName)}</div><div class="pi-ts">${p.time||''}</div></div><div class="pi-picks"><div class="pip p1">🏆 ${esc(p.picks[0])}</div><div class="pip p2">🥈 ${esc(p.picks[1])}</div><div class="pip p3">🥉 ${esc(p.picks[2])}</div>${p.dnf?'<div style="font-family:'Share Tech Mono',monospace;font-size:.48rem;color:var(--orange);border:1px solid rgba(255,140,0,.2);padding:1px 5px">DNF+2</div>':''}</div>`;
+    div.innerHTML=`<div class="pi-hdr"><div class="pi-dot" style="background:${teamCol}"></div><div class="pi-nm">${esc(p.mName)}</div><div class="pi-ts">${p.time||''}</div></div><div class="pi-picks"><div class="pip p1">🏆 ${esc(p.picks[0])}</div><div class="pip p2">🥈 ${esc(p.picks[1])}</div><div class="pip p3">🥉 ${esc(p.picks[2])}</div>${p.dnf?`<div style="color:var(--orange);font-size:.46rem;padding:1px 4px;border:1px solid rgba(255,140,0,.2)">+DNF</div>`:''}`;
     el.appendChild(div);
   });
   // also check existing now that preds loaded
