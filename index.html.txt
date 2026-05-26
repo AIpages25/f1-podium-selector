@@ -1986,7 +1986,7 @@ async function fetchSprintResults() {
     const sprintTime = new Date(raceDate.getTime() - 26 * 3600 * 1000);
     if (now < sprintTime) continue;
     try {
-      const res = await fetch(\`\${JOLPICA}/2026/\${race.r}/sprint.json\`, {signal: AbortSignal.timeout(8000)});
+      const res = await fetch(`${JOLPICA}/2026/${race.r}/sprint.json`, {signal: AbortSignal.timeout(8000)});
       if (!res.ok) continue;
       const d = await res.json();
       const results = d?.MRData?.RaceTable?.Races?.[0]?.SprintResults;
@@ -2064,7 +2064,7 @@ async function loadAuditLog() {
       const d = doc.data();
       const div = document.createElement('div');
       div.className = 'audit-entry';
-      div.innerHTML = \`<span class="ae-time">\${new Date(d.ts).toLocaleString('en-US',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'})}</span> · <span class="ae-user">\${esc(d.uname)}</span> · \${esc(d.action)}\${d.details ? ' · <span class="ae-race">'+esc(d.details)+'</span>' : ''}\`;
+      div.innerHTML = `<span class="ae-time">${new Date(d.ts).toLocaleString('en-US',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'})}</span> · <span class="ae-user">${esc(d.uname)}</span> · ${esc(d.action)}${d.details ? ' · <span class="ae-race">'+esc(d.details)+'</span>' : ''}`;
       el.appendChild(div);
     });
   } catch(e) {
@@ -2079,7 +2079,7 @@ function populateBulkSelects() {
   CAL_2026.forEach(r => {
     const o = document.createElement('option');
     o.value = r.r;
-    o.textContent = \`R\${r.r} · \${r.name.replace(' Grand Prix', '')}\`;
+    o.textContent = `R${r.r} · ${r.name.replace(' Grand Prix', '')}`;
     raceSel.appendChild(o);
   });
   ['bulkP1','bulkP2','bulkP3'].forEach(id => {
@@ -2088,7 +2088,7 @@ function populateBulkSelects() {
     DRIVERS_2026.forEach(d => {
       const o = document.createElement('option');
       o.value = d.a;
-      o.textContent = \`\${d.a} · \${d.n}\`;
+      o.textContent = `${d.a} · ${d.n}`;
       s.appendChild(o);
     });
   });
@@ -2119,7 +2119,7 @@ async function saveBulkResult() {
   if (firebaseOk && db) {
     try {
       await db.collection('meta').doc('cachedResults').set({ [r]: result }, {merge: true});
-      await logAudit('BULK_RESULT', \`R\${r}: \${result.join(' › ')}\`);
+      await logAudit('BULK_RESULT', `R${r}: ${result.join(' › ')}`);
       showMsg('✓ Result saved and cached.', 'ok');
     } catch(e) {
       showMsg('⚠ Saved locally only (Firebase error).', 'err');
@@ -2168,11 +2168,11 @@ function renderFormGuide(membersList, predsList) {
       const race = CAL_2026.find(r => r.r === last5[i]);
       const raceName = (race?.name || 'R'+last5[i]).replace(' Grand Prix','').substring(0,3).toUpperCase();
       if (pts === null) {
-        return \`<div class="form-bar-wrap"><div class="form-bar" style="height:2px;background:var(--border2)"></div><div class="form-bar-lbl">\${raceName}</div></div>\`;
+        return `<div class="form-bar-wrap"><div class="form-bar" style="height:2px;background:var(--border2)"></div><div class="form-bar-lbl">${raceName}</div></div>`;
       }
       const h = Math.max(4, Math.round((pts / maxPts) * maxH));
       const color = pts >= 8 ? 'var(--green)' : pts >= 5 ? 'var(--gold)' : pts >= 1 ? 'var(--orange)' : 'var(--muted)';
-      return \`<div class="form-bar-wrap"><div class="form-bar" style="height:\${h}px;background:\${color}" title="\${pts}pts"></div><div class="form-bar-lbl">\${raceName}</div></div>\`;
+      return `<div class="form-bar-wrap"><div class="form-bar" style="height:${h}px;background:${color}" title="${pts}pts"></div><div class="form-bar-lbl">${raceName}</div></div>`;
     }).join('');
 
     const scored5 = pts5.filter(p => p !== null);
@@ -2181,17 +2181,17 @@ function renderFormGuide(membersList, predsList) {
 
     const card = document.createElement('div');
     card.className = 'form-card';
-    card.innerHTML = \`
+    card.innerHTML = `
       <div class="form-header">
-        <div class="form-av" style="background:\${avCol(m.name)}">\${m.name.charAt(0).toUpperCase()}</div>
+        <div class="form-av" style="background:${avCol(m.name)}">${m.name.charAt(0).toUpperCase()}</div>
         <div>
-          <div class="form-name">\${esc(m.name)}</div>
-          <div style="font-family:'Share Tech Mono',monospace;font-size:.5rem;color:var(--muted);letter-spacing:1px">Avg last 5: \${avg5}pts</div>
+          <div class="form-name">${esc(m.name)}</div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:.5rem;color:var(--muted);letter-spacing:1px">Avg last 5: ${avg5}pts</div>
         </div>
       </div>
-      <div class="form-bars">\${bars}</div>
-      <div class="form-total">\${sum5}pts in last \${scored5.length} race\${scored5.length !== 1 ? 's' : ''}</div>
-    \`;
+      <div class="form-bars">${bars}</div>
+      <div class="form-total">${sum5}pts in last ${scored5.length} race${scored5.length !== 1 ? 's' : ''}</div>
+    `;
     grid.appendChild(card);
   });
 }
